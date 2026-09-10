@@ -1,4 +1,4 @@
-package main
+package govalidation
 
 import (
 	"encoding/base64"
@@ -14,26 +14,26 @@ import (
 )
 
 var (
-	emailRe          = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	urlRe            = regexp.MustCompile(`^https?://[^\s/$.?#].[^\s]*$`)
-	uuidRe           = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
-	ipRe             = regexp.MustCompile(`^(\d{1,3}\.){3}\d{1,3}$`)
-	ipV6Re           = regexp.MustCompile(`^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$`)
-	macRe            = regexp.MustCompile(`^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$`)
-	latRe            = regexp.MustCompile(`^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$`)
-	lonRe            = regexp.MustCompile(`^-?((1[0-7]\d|[1-9]?\d)(\.\d+)?|180(\.0+)?)$`)
-	coordRe          = regexp.MustCompile(`^-?([1-8]?\d(\.\d+)?|90(\.0+)?)\s*,\s*-?((1[0-7]\d|[1-9]?\d)(\.\d+)?|180(\.0+)?)$`)
-	hexColorRe       = regexp.MustCompile(`^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$`)
-	cssColorRe       = regexp.MustCompile(`^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$|^[a-zA-Z]+$|^rgb\(|^rgba\(|^hsl\(|^hsla\(`)
-	jsonRe           = regexp.MustCompile(`^\s*[\{\[]`)
-	creditCardRe     = regexp.MustCompile(`^4[0-9]{12}(?:[0-9]{3})?$|^5[1-5][0-9]{14}$|^3[47][0-9]{13}$|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(?:2131|1800|35\d{3})\d{11}$`)
-	base64Re         = regexp.MustCompile(`^[A-Za-z0-9+/]*={0,2}$`)
-	hexadecimalRe    = regexp.MustCompile(`^[0-9a-fA-F]+$`)
-	rgbRe            = regexp.MustCompile(`^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$`)
-	rgbaRe           = regexp.MustCompile(`^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(0(\.\d+)?|1(\.0+)?)\s*\)$`)
-	hslRe            = regexp.MustCompile(`^hsl\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$`)
-	hslaRe           = regexp.MustCompile(`^hsla\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*(0(\.\d+)?|1(\.0+)?)\s*\)$`)
-	semverRe         = regexp.MustCompile(`^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
+	emailRe       = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+	urlRe         = regexp.MustCompile(`^https?://[^\s/$.?#].[^\s]*$`)
+	uuidRe        = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	ipRe          = regexp.MustCompile(`^(\d{1,3}\.){3}\d{1,3}$`)
+	ipV6Re        = regexp.MustCompile(`^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$`)
+	macRe         = regexp.MustCompile(`^([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}$`)
+	latRe         = regexp.MustCompile(`^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$`)
+	lonRe         = regexp.MustCompile(`^-?((1[0-7]\d|[1-9]?\d)(\.\d+)?|180(\.0+)?)$`)
+	coordRe       = regexp.MustCompile(`^-?([1-8]?\d(\.\d+)?|90(\.0+)?)\s*,\s*-?((1[0-7]\d|[1-9]?\d)(\.\d+)?|180(\.0+)?)$`)
+	hexColorRe    = regexp.MustCompile(`^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$`)
+	cssColorRe    = regexp.MustCompile(`^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$|^[a-zA-Z]+$|^rgb\(|^rgba\(|^hsl\(|^hsla\(`)
+	jsonRe        = regexp.MustCompile(`^\s*[\{\[]`)
+	creditCardRe  = regexp.MustCompile(`^4[0-9]{12}(?:[0-9]{3})?$|^5[1-5][0-9]{14}$|^3[47][0-9]{13}$|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(?:2131|1800|35\d{3})\d{11}$`)
+	base64Re      = regexp.MustCompile(`^[A-Za-z0-9+/]*={0,2}$`)
+	hexadecimalRe = regexp.MustCompile(`^[0-9a-fA-F]+$`)
+	rgbRe         = regexp.MustCompile(`^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$`)
+	rgbaRe        = regexp.MustCompile(`^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(0(\.\d+)?|1(\.0+)?)\s*\)$`)
+	hslRe         = regexp.MustCompile(`^hsl\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$`)
+	hslaRe        = regexp.MustCompile(`^hsla\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*(0(\.\d+)?|1(\.0+)?)\s*\)$`)
+	semverRe      = regexp.MustCompile(`^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 )
 
 func validateEmail(lang, name string, fv reflect.Value, msg string) error {

@@ -1,4 +1,4 @@
-package main
+package govalidation
 
 import (
 	"fmt"
@@ -306,6 +306,7 @@ func ValidateWithRules(lang string, v interface{}, rules map[string][]string, sk
 //	    "Children.Age":      {"required", "min=1"},
 //	    "Emails":            {"required", "email"},
 //	}
+//
 // If skipEmpty is not provided or true, fields with zero values are skipped (except required).
 func ValidateStructWithRules(lang string, v interface{}, rules map[string][]string, skipEmpty ...bool) []error {
 	skip := len(skipEmpty) == 0 || skipEmpty[0]
@@ -450,7 +451,7 @@ func validateStructArrayField(lang string, sv reflect.Value, field string, field
 							key, msg := parseRuleWithMsg(rule)
 							if key == "required" {
 								if msg != "" {
-									errs = append(errs, ValError{elemName+"."+subField, "required", msg})
+									errs = append(errs, ValError{elemName + "." + subField, "required", msg})
 								} else {
 									errs = append(errs, locErr(lang, "required", elemName+"."+subField, ""))
 								}
