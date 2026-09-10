@@ -188,14 +188,14 @@ func validateDigits(lang, name string, fv reflect.Value, param, msg string) erro
 			if msg != "" {
 				return ValError{name, "digits", msg}
 			}
-			return locErr(lang, "digits", name, "")
+			return locErr(lang, "digits", name, "", param)
 		}
 	} else {
 		if len(s) != parsedInt {
 			if msg != "" {
 				return ValError{name, "digits", msg}
 			}
-			return locErr(lang, "digits", name, "")
+			return locErr(lang, "digits", name, "", param)
 		}
 	}
 	return nil
@@ -226,7 +226,7 @@ func validateDigitsBetween(lang, name string, fv reflect.Value, param, msg strin
 		if msg != "" {
 			return ValError{name, "digits_between", msg}
 		}
-		return locErr(lang, "digits_between", name, "")
+		return locErr(lang, "digits_between", name, "", minStr, maxStr)
 	}
 	return nil
 }
@@ -433,12 +433,19 @@ func sizeErr(lang, field, rule, msgType, customMsg, val, min, max string) error 
 		msgKey = rule + "_number"
 	}
 
-	if min == "" && max == "" {
-		return locErr(lang, msgKey, field, val)
-	} else if min == "" {
-		return locErr(lang, msgKey, field, max)
-	} else if max == "" {
-		return locErr(lang, msgKey, field, min)
+	if rule == "between" || rule == "digits_between" {
+		return locErr(lang, msgKey, field, "", val, min)
 	}
-	return locErr(lang, msgKey, field, min, max)
+	if rule == "min" || rule == "max" || rule == "len" || rule == "gt" || rule == "gte" || rule == "lt" || rule == "lte" || rule == "eq" || rule == "ne" {
+		return locErr(lang, msgKey, field, "", val)
+	}
+
+	if min == "" && max == "" {
+		return locErr(lang, msgKey, field, "", val)
+	} else if min == "" {
+		return locErr(lang, msgKey, field, "", max)
+	} else if max == "" {
+		return locErr(lang, msgKey, field, "", min)
+	}
+	return locErr(lang, msgKey, field, "", min, max)
 }

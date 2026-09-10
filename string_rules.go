@@ -160,7 +160,7 @@ func validateContains(lang, name string, fv reflect.Value, substr, msg string) e
 		if msg != "" {
 			return ValError{name, "contains", msg}
 		}
-		return locErr(lang, "contains", name, "")
+		return locErr(lang, "contains", name, "", substr)
 	}
 	return nil
 }
@@ -173,7 +173,7 @@ func validateContainsAny(lang, name string, fv reflect.Value, chars, msg string)
 		if msg != "" {
 			return ValError{name, "containsany", msg}
 		}
-		return locErr(lang, "containsany", name, "")
+		return locErr(lang, "containsany", name, "", chars)
 	}
 	return nil
 }
@@ -187,7 +187,7 @@ func validateContainsRune(lang, name string, fv reflect.Value, runeStr, msg stri
 		if msg != "" {
 			return ValError{name, "containsrune", msg}
 		}
-		return locErr(lang, "containsrune", name, "")
+		return locErr(lang, "containsrune", name, "", runeStr)
 	}
 	return nil
 }
@@ -200,7 +200,7 @@ func validateExcludes(lang, name string, fv reflect.Value, substr, msg string) e
 		if msg != "" {
 			return ValError{name, "excludes", msg}
 		}
-		return locErr(lang, "excludes", name, "")
+		return locErr(lang, "excludes", name, "", substr)
 	}
 	return nil
 }
@@ -213,7 +213,7 @@ func validateExcludesAll(lang, name string, fv reflect.Value, chars, msg string)
 		if msg != "" {
 			return ValError{name, "excludesall", msg}
 		}
-		return locErr(lang, "excludesall", name, "")
+		return locErr(lang, "excludesall", name, "", chars)
 	}
 	return nil
 }
@@ -227,7 +227,7 @@ func validateExcludesRune(lang, name string, fv reflect.Value, runeStr, msg stri
 		if msg != "" {
 			return ValError{name, "excludesrune", msg}
 		}
-		return locErr(lang, "excludesrune", name, "")
+		return locErr(lang, "excludesrune", name, "", runeStr)
 	}
 	return nil
 }
@@ -240,7 +240,7 @@ func validateStartsWith(lang, name string, fv reflect.Value, prefix, msg string)
 		if msg != "" {
 			return ValError{name, "startswith", msg}
 		}
-		return locErr(lang, "startswith", name, "")
+		return locErr(lang, "startswith", name, "", prefix)
 	}
 	return nil
 }
@@ -253,7 +253,7 @@ func validateEndsWith(lang, name string, fv reflect.Value, suffix, msg string) e
 		if msg != "" {
 			return ValError{name, "endswith", msg}
 		}
-		return locErr(lang, "endswith", name, "")
+		return locErr(lang, "endswith", name, "", suffix)
 	}
 	return nil
 }
@@ -266,7 +266,7 @@ func validateStartsNotWith(lang, name string, fv reflect.Value, prefix, msg stri
 		if msg != "" {
 			return ValError{name, "startsnotwith", msg}
 		}
-		return locErr(lang, "startsnotwith", name, "")
+		return locErr(lang, "startsnotwith", name, "", prefix)
 	}
 	return nil
 }
@@ -279,7 +279,7 @@ func validateEndsNotWith(lang, name string, fv reflect.Value, suffix, msg string
 		if msg != "" {
 			return ValError{name, "endsnotwith", msg}
 		}
-		return locErr(lang, "endsnotwith", name, "")
+		return locErr(lang, "endsnotwith", name, "", suffix)
 	}
 	return nil
 }

@@ -4,10 +4,44 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
+// splitParamValues splits a parameter string by comma or space.
+// Supports both "admin,user,guest" and "admin user guest".
+func splitParamValues(param string) []string {
+	// If contains comma, split by comma
+	if strings.Contains(param, ",") {
+		return strings.Split(param, ",")
+	}
+	// Otherwise split by whitespace
+	return strings.Fields(param)
+}
+
+// trimSpaces trims leading/trailing spaces from each value
+func trimSpaces(values []string) []string {
+	result := make([]string, 0, len(values))
+	for _, v := range values {
+		trimmed := strings.TrimSpace(v)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
+}
+
+// containsSpaceOrComma checks if string contains space or comma
+func containsSpaceOrComma(s string) bool {
+	for _, r := range s {
+		if unicode.IsSpace(r) || r == ',' {
+			return true
+		}
+	}
+	return false
+}
+
 func validateOneOf(lang, name string, fv reflect.Value, param, msg string) error {
-	validValues := strings.Split(param, ",")
+	validValues := splitParamValues(param)
 	found := false
 
 	switch fv.Kind() {
@@ -60,7 +94,7 @@ func validateOneOf(lang, name string, fv reflect.Value, param, msg string) error
 		if msg != "" {
 			return ValError{name, "oneof", msg}
 		}
-		return locErr(lang, "oneof", name, "")
+		return locErr(lang, "oneof", name, "", param)
 	}
 	return nil
 }
@@ -70,7 +104,7 @@ func validateIn(lang, name string, fv reflect.Value, param, msg string) error {
 }
 
 func validateNotIn(lang, name string, fv reflect.Value, param, msg string) error {
-	validValues := strings.Split(param, ",")
+	validValues := splitParamValues(param)
 	found := false
 
 	switch fv.Kind() {
@@ -123,7 +157,7 @@ func validateNotIn(lang, name string, fv reflect.Value, param, msg string) error
 		if msg != "" {
 			return ValError{name, "not_in", msg}
 		}
-		return locErr(lang, "not_in", name, "")
+		return locErr(lang, "not_in", name, "", param)
 	}
 	return nil
 }
@@ -186,7 +220,7 @@ func validateMaxWord(lang, name string, fv reflect.Value, param, msg string) err
 		if msg != "" {
 			return ValError{name, "max_word", msg}
 		}
-		return locErr(lang, "max_word", name, "")
+		return locErr(lang, "max_word", name, "", param)
 	}
 	return nil
 }
@@ -204,7 +238,7 @@ func validateMinWord(lang, name string, fv reflect.Value, param, msg string) err
 		if msg != "" {
 			return ValError{name, "min_word", msg}
 		}
-		return locErr(lang, "min_word", name, "")
+		return locErr(lang, "min_word", name, "", param)
 	}
 	return nil
 }
@@ -222,7 +256,7 @@ func validateLenWord(lang, name string, fv reflect.Value, param, msg string) err
 		if msg != "" {
 			return ValError{name, "len_word", msg}
 		}
-		return locErr(lang, "len_word", name, "")
+		return locErr(lang, "len_word", name, "", param)
 	}
 	return nil
 }

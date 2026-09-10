@@ -1037,7 +1037,7 @@ func checkRuleAgainstField(fv reflect.Value, rule string) bool {
 	case "lte":
 		return checkNumericComparison(fv, arg, "<=")
 	case "oneof", "in":
-		validValues := strings.Split(arg, ",")
+		validValues := splitParamValues(arg)
 		s := fvToString(fv)
 		for _, v := range validValues {
 			if s == strings.TrimSpace(v) {
@@ -1046,7 +1046,7 @@ func checkRuleAgainstField(fv reflect.Value, rule string) bool {
 		}
 		return false
 	case "not_in":
-		validValues := strings.Split(arg, ",")
+		validValues := splitParamValues(arg)
 		s := fvToString(fv)
 		for _, v := range validValues {
 			if s == strings.TrimSpace(v) {
