@@ -14,7 +14,7 @@ A powerful Go validation library with support for structs, maps, nested fields, 
 - **Conditional Validation** - `ApplyIf()` and `ApplyIfElse()` for conditional rules
 - **Skip Empty Fields** - configurable behavior (default: skip empty)
 - **Zero Dependencies** - only stdlib
-- **Embedded Locale Files** - no external files needed
+- **Embedded Locales** - compiled into binary via `//go:embed`, zero file I/O at runtime
 
 ## Installation
 
@@ -237,23 +237,44 @@ errs = validation.Validate("en", user, false)
 
 ## Localization
 
+### How It Works
+
+All locale files (`locale/*.json`) are **embedded at compile time** using `//go:embed` and loaded once at package `init()`. This means:
+
+- **Zero file I/O** at runtime — no disk reads on errors
+- **No mutex locking** — direct map lookup for messages
+- **No setup required** — locales work out of the box
+- Locales are part of your binary — no external files needed
+
 ### Supported Languages
-- English (`en`)
+- English (`en`) — default
 - Arabic (`ar`)
 
-### Adding New Language
+### Adding a New Language
 
-```go
-// Add locale file: locale/fr.json
+1. Create a JSON file in `locale/` directory (e.g., `locale/fr.json`):
+
+```json
 {
     "required": "Le champ :field est obligatoire",
     "email": "Le champ :field doit être un email valide",
     "min_string": "Le champ :field doit avoir au moins :arg caractères"
 }
+```
 
-// Use it
+2. Build your project — the new locale is automatically embedded:
+
+```bash
+go build .
+```
+
+3. Use it:
+
+```go
 errs := validation.Validate("fr", user)
 ```
+
+> **Note:** Since locales are embedded at compile time, you must rebuild after adding/modifying locale files.
 
 ### Available Message Variables
 - `:field` - The field name
@@ -306,21 +327,17 @@ func (e ValError) GetMessage() string // Returns Msg
 ## Configuration
 
 ```go
-// Set default language
+// Set default language (affects all subsequent validation calls)
 validation.SetLanguage("ar")
 
-// Set locale file path (for custom locale files)
-validation.SetLocalePath("/path/to/locale")
+// Get current language
+lang := validation.GetLanguage()
 
-// Get current config
-cfg := validation.GetConfig()
-
-// Clear locale cache (after adding new locale files)
-validation.ClearLocaleCache()
-
-// Get available languages
+// Get available languages (from embedded locale files)
 langs := validation.GetAvailableLanguages()
 ```
+
+> **Note:** `SetLocalePath()` and `ClearLocaleCache()` are kept for API compatibility but are no longer needed since locales are embedded at compile time via `//go:embed` and loaded once at `init()`.
 
 ## Examples
 

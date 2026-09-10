@@ -22,11 +22,15 @@ func validateAlpha(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "alpha", msg, "only supported on strings")
 	}
-	if !alphaRe.MatchString(fv.String()) {
-		if msg != "" {
-			return ValError{name, "alpha", msg}
+	s := fv.String()
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+			if msg != "" {
+				return ValError{name, "alpha", msg}
+			}
+			return locErr(lang, "alpha", name, "")
 		}
-		return locErr(lang, "alpha", name, "")
 	}
 	return nil
 }
@@ -35,11 +39,15 @@ func validateAlphaNum(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "alpha_num", msg, "only supported on strings")
 	}
-	if !alphaNumRe.MatchString(fv.String()) {
-		if msg != "" {
-			return ValError{name, "alpha_num", msg}
+	s := fv.String()
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+			if msg != "" {
+				return ValError{name, "alpha_num", msg}
+			}
+			return locErr(lang, "alpha_num", name, "")
 		}
-		return locErr(lang, "alpha_num", name, "")
 	}
 	return nil
 }
@@ -130,11 +138,14 @@ func validateLowercase(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "lowercase", msg, "only supported on strings")
 	}
-	if fv.String() != strings.ToLower(fv.String()) {
-		if msg != "" {
-			return ValError{name, "lowercase", msg}
+	s := fv.String()
+	for i := 0; i < len(s); i++ {
+		if s[i] >= 'A' && s[i] <= 'Z' {
+			if msg != "" {
+				return ValError{name, "lowercase", msg}
+			}
+			return locErr(lang, "lowercase", name, "")
 		}
-		return locErr(lang, "lowercase", name, "")
 	}
 	return nil
 }
@@ -143,11 +154,14 @@ func validateUppercase(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "uppercase", msg, "only supported on strings")
 	}
-	if fv.String() != strings.ToUpper(fv.String()) {
-		if msg != "" {
-			return ValError{name, "uppercase", msg}
+	s := fv.String()
+	for i := 0; i < len(s); i++ {
+		if s[i] >= 'a' && s[i] <= 'z' {
+			if msg != "" {
+				return ValError{name, "uppercase", msg}
+			}
+			return locErr(lang, "uppercase", name, "")
 		}
-		return locErr(lang, "uppercase", name, "")
 	}
 	return nil
 }

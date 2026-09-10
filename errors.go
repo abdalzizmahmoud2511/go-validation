@@ -29,24 +29,70 @@ func (e ValError) GetMessage() string {
 }
 
 // locErr creates a ValError with localized message.
+// Optimized: no map allocation, direct string replacement.
 func locErr(lang, rule, field, msgType string, args ...string) error {
-	vars := map[string]string{
-		"field": field,
+	msg := resolveMsg(lang, rule, msgType, field, args)
+	return ValError{field, rule, msg}
+}
+
+// resolveMsg looks up the locale message and replaces variables inline.
+// Zero map allocations — direct string replacement.
+func resolveMsg(lang, rule, msgType, field string, args []string) string {
+	msgs, ok := allLocales[lang]
+	if !ok {
+		msgs = allLocales["en"]
 	}
+
+	// Try type-specific message (e.g., "min_string")
+	if msgType != "" {
+		typeKey := rule + "_" + msgType
+		if msg, ok := msgs[typeKey]; ok {
+			return fillTemplate(msg, field, args)
+		}
+	}
+
+	// Fallback to base key (e.g., "min")
+	if msg, ok := msgs[rule]; ok {
+		return fillTemplate(msg, field, args)
+	}
+
+	// Fallback to English
+	if lang != "en" {
+		if enMsgs, ok := allLocales["en"]; ok {
+			if msgType != "" {
+				typeKey := rule + "_" + msgType
+				if msg, ok := enMsgs[typeKey]; ok {
+					return fillTemplate(msg, field, args)
+				}
+			}
+			if msg, ok := enMsgs[rule]; ok {
+				return fillTemplate(msg, field, args)
+			}
+		}
+	}
+
+	return "Validation failed for :field"
+}
+
+// fillTemplate replaces :field, :arg, :min, :max in message.
+// Zero allocations for the common case (no placeholders).
+func fillTemplate(msg, field string, args []string) string {
+	// Fast path: check if msg contains any placeholders
+	if !strings.Contains(msg, ":") {
+		return msg
+	}
+
+	msg = strings.ReplaceAll(msg, ":field", field)
 
 	if len(args) > 0 {
-		vars["arg"] = args[0]
+		msg = strings.ReplaceAll(msg, ":arg", args[0])
 	}
 	if len(args) > 1 {
-		vars["min"] = args[0]
-		vars["max"] = args[1]
-	}
-	if msgType != "" {
-		vars["_type"] = msgType
+		msg = strings.ReplaceAll(msg, ":min", args[0])
+		msg = strings.ReplaceAll(msg, ":max", args[1])
 	}
 
-	msg := getMessage(lang, rule, vars)
-	return ValError{field, rule, msg}
+	return msg
 }
 
 // customErr returns a ValError with custom message if provided, otherwise localized message.
@@ -55,10 +101,7 @@ func customErr(lang, field, rule, customMsg, defaultMsg string) error {
 		msg := resolveLocaleMsg(lang, field, rule, customMsg)
 		return ValError{field, rule, msg}
 	}
-	vars := map[string]string{
-		"field": field,
-	}
-	msg := getMessage(lang, rule, vars)
+	msg := resolveMsg(lang, rule, "", field, nil)
 	if msg == "" {
 		msg = defaultMsg
 	}
@@ -69,8 +112,7 @@ func customErr(lang, field, rule, customMsg, defaultMsg string) error {
 func resolveLocaleMsg(lang, field, rule, msg string) string {
 	if strings.HasPrefix(msg, "_locale:") {
 		key := strings.TrimPrefix(msg, "_locale:")
-		vars := map[string]string{"field": field}
-		resolved := getMessage(lang, key, vars)
+		resolved := resolveMsg(lang, key, "", field, nil)
 		if resolved != "" {
 			return resolved
 		}

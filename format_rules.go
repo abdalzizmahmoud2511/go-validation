@@ -34,6 +34,7 @@ var (
 	hslRe         = regexp.MustCompile(`^hsl\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$`)
 	hslaRe        = regexp.MustCompile(`^hsla\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*(0(\.\d+)?|1(\.0+)?)\s*\)$`)
 	semverRe      = regexp.MustCompile(`^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
+	ssnRe         = regexp.MustCompile(`^\d{9}$`)
 )
 
 func validateEmail(lang, name string, fv reflect.Value, msg string) error {
@@ -78,15 +79,32 @@ func validateURI(lang, name string, fv reflect.Value, msg string) error {
 	return nil
 }
 
+// isValidUUIDChar checks if byte is a valid hex or dash character for UUID
+func isValidUUIDChar(b byte) bool {
+	return (b >= '0' && b <= '9') || (b >= 'a' && b <= 'f') || (b >= 'A' && b <= 'F') || b == '-'
+}
+
 func validateUUID(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "uuid", msg, "only supported on strings")
 	}
-	if !uuidRe.MatchString(fv.String()) {
+	s := fv.String()
+	if len(s) != 36 || s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 		if msg != "" {
 			return ValError{name, "uuid", msg}
 		}
 		return locErr(lang, "uuid", name, "")
+	}
+	for i := 0; i < 36; i++ {
+		if i == 8 || i == 13 || i == 18 || i == 23 {
+			continue
+		}
+		if !isValidUUIDChar(s[i]) {
+			if msg != "" {
+				return ValError{name, "uuid", msg}
+			}
+			return locErr(lang, "uuid", name, "")
+		}
 	}
 	return nil
 }
@@ -95,11 +113,23 @@ func validateUUID3(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "uuid3", msg, "only supported on strings")
 	}
-	if !uuidRe.MatchString(fv.String()) || fv.String()[14] != '3' {
+	s := fv.String()
+	if len(s) != 36 || s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' || s[14] != '3' {
 		if msg != "" {
 			return ValError{name, "uuid3", msg}
 		}
 		return locErr(lang, "uuid3", name, "")
+	}
+	for i := 0; i < 36; i++ {
+		if i == 8 || i == 13 || i == 18 || i == 23 {
+			continue
+		}
+		if !isValidUUIDChar(s[i]) {
+			if msg != "" {
+				return ValError{name, "uuid3", msg}
+			}
+			return locErr(lang, "uuid3", name, "")
+		}
 	}
 	return nil
 }
@@ -108,11 +138,23 @@ func validateUUID4(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "uuid4", msg, "only supported on strings")
 	}
-	if !uuidRe.MatchString(fv.String()) || fv.String()[14] != '4' {
+	s := fv.String()
+	if len(s) != 36 || s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' || s[14] != '4' {
 		if msg != "" {
 			return ValError{name, "uuid4", msg}
 		}
 		return locErr(lang, "uuid4", name, "")
+	}
+	for i := 0; i < 36; i++ {
+		if i == 8 || i == 13 || i == 18 || i == 23 {
+			continue
+		}
+		if !isValidUUIDChar(s[i]) {
+			if msg != "" {
+				return ValError{name, "uuid4", msg}
+			}
+			return locErr(lang, "uuid4", name, "")
+		}
 	}
 	return nil
 }
@@ -121,11 +163,23 @@ func validateUUID5(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "uuid5", msg, "only supported on strings")
 	}
-	if !uuidRe.MatchString(fv.String()) || fv.String()[14] != '5' {
+	s := fv.String()
+	if len(s) != 36 || s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' || s[14] != '5' {
 		if msg != "" {
 			return ValError{name, "uuid5", msg}
 		}
 		return locErr(lang, "uuid5", name, "")
+	}
+	for i := 0; i < 36; i++ {
+		if i == 8 || i == 13 || i == 18 || i == 23 {
+			continue
+		}
+		if !isValidUUIDChar(s[i]) {
+			if msg != "" {
+				return ValError{name, "uuid5", msg}
+			}
+			return locErr(lang, "uuid5", name, "")
+		}
 	}
 	return nil
 }
@@ -385,8 +439,13 @@ func validateJSON(lang, name string, fv reflect.Value, msg string) error {
 	if fv.Kind() != reflect.String {
 		return customErr(lang, name, "json", msg, "only supported on strings")
 	}
-	s := strings.TrimSpace(fv.String())
-	if !jsonRe.MatchString(s) {
+	s := fv.String()
+	// Fast path: skip leading whitespace and check first char
+	i := 0
+	for i < len(s) && (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == '\r') {
+		i++
+	}
+	if i >= len(s) || (s[i] != '{' && s[i] != '[') {
 		if msg != "" {
 			return ValError{name, "json", msg}
 		}
@@ -408,6 +467,13 @@ func validateCreditCard(lang, name string, fv reflect.Value, msg string) error {
 	}
 	s := strings.ReplaceAll(fv.String(), " ", "")
 	s = strings.ReplaceAll(s, "-", "")
+	// Fast reject: credit cards are 13-19 digits
+	if len(s) < 13 || len(s) > 19 {
+		if msg != "" {
+			return ValError{name, "credit_card", msg}
+		}
+		return locErr(lang, "credit_card", name, "")
+	}
 	if !creditCardRe.MatchString(s) {
 		if msg != "" {
 			return ValError{name, "credit_card", msg}
@@ -649,7 +715,6 @@ func validateSSN(lang, name string, fv reflect.Value, msg string) error {
 	}
 	s := strings.ReplaceAll(fv.String(), "-", "")
 	s = strings.ReplaceAll(s, " ", "")
-	ssnRe := regexp.MustCompile(`^\d{9}$`)
 	if !ssnRe.MatchString(s) {
 		if msg != "" {
 			return ValError{name, "ssn", msg}

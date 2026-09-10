@@ -25,3 +25,5 @@ vendor/
 # OS
 .DS_Store
 Thumbs.db
+
+benchmark_compare_test.go
