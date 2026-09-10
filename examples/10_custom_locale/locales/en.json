@@ -1,0 +1,21 @@
+{
+  "required": "FIELD :field IS MANDATORY",
+  "alpha": "FIELD :field MUST CONTAIN ONLY LETTERS",
+  "alpha_num": "FIELD :field MUST CONTAIN ONLY LETTERS AND NUMBERS",
+  "min_string": "FIELD :field MUST HAVE AT LEAST :arg CHARACTERS",
+  "max_string": "FIELD :field MUST NOT EXCEED :arg CHARACTERS",
+  "email": "FIELD :field MUST BE A VALID EMAIL ADDRESS",
+  "url": "FIELD :field MUST BE A VALID URL",
+  "uuid": "FIELD :field MUST BE A VALID UUID",
+  "min": "FIELD :field MUST BE AT LEAST :arg",
+  "max": "FIELD :field MUST NOT EXCEED :arg",
+  "between": "FIELD :field MUST BE BETWEEN :min AND :max",
+  "oneof": "FIELD :field MUST BE ONE OF: :arg",
+  "not_in": "FIELD :field MUST NOT BE ANY OF: :arg",
+  "date": "FIELD :field MUST BE A VALID DATE (YYYY-MM-DD)",
+  "ip": "FIELD :field MUST BE A VALID IP ADDRESS",
+  "hexcolor": "FIELD :field MUST BE A VALID HEX COLOR",
+  "json": "FIELD :field MUST BE A VALID JSON STRING",
+  "credit_card": "FIELD :field MUST BE A VALID CREDIT CARD NUMBER",
+  "ssn": "FIELD :field MUST BE A VALID SSN"
+}

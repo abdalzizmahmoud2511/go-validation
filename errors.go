@@ -36,12 +36,9 @@ func locErr(lang, rule, field, msgType string, args ...string) error {
 }
 
 // resolveMsg looks up the locale message and replaces variables inline.
-// Zero map allocations — direct string replacement.
+// Checks custom locales first, then embedded, then falls back to English.
 func resolveMsg(lang, rule, msgType, field string, args []string) string {
-	msgs, ok := allLocales[lang]
-	if !ok {
-		msgs = allLocales["en"]
-	}
+	msgs := getLocaleMessages(lang)
 
 	// Try type-specific message (e.g., "min_string")
 	if msgType != "" {
@@ -58,16 +55,15 @@ func resolveMsg(lang, rule, msgType, field string, args []string) string {
 
 	// Fallback to English
 	if lang != "en" {
-		if enMsgs, ok := allLocales["en"]; ok {
-			if msgType != "" {
-				typeKey := rule + "_" + msgType
-				if msg, ok := enMsgs[typeKey]; ok {
-					return fillTemplate(msg, field, args)
-				}
-			}
-			if msg, ok := enMsgs[rule]; ok {
+		enMsgs := getLocaleMessages("en")
+		if msgType != "" {
+			typeKey := rule + "_" + msgType
+			if msg, ok := enMsgs[typeKey]; ok {
 				return fillTemplate(msg, field, args)
 			}
+		}
+		if msg, ok := enMsgs[rule]; ok {
+			return fillTemplate(msg, field, args)
 		}
 	}
 

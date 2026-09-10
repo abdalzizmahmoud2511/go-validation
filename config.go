@@ -44,11 +44,14 @@ func GetLanguage() string {
 	return defaultConfig.Language
 }
 
-// SetLocalePath sets the path to the locale directory.
+// SetLocalePath sets the path to a custom locale directory and loads locales from it.
+// Custom locales override embedded locales.
 func SetLocalePath(path string) {
 	configMu.Lock()
 	defer configMu.Unlock()
 	defaultConfig.LocalePath = path
+	// Load custom locales from the specified path
+	loadCustomLocales(path)
 }
 
 // GetLocalePath returns the current locale path.

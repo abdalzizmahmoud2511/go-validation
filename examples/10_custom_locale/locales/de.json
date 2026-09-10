@@ -1,0 +1,21 @@
+{
+  "required": "FELD :field IST ERFORDERLICH",
+  "alpha": "FELD :field DARF NUR BUCHSTABEN ENTHALTEN",
+  "alpha_num": "FELD :field DARF NUR BUCHSTABEN UND ZAHLEN ENTHALTEN",
+  "min_string": "FELD :field MUSS MINDESTENS :arg ZEICHEN HABEN",
+  "max_string": "FELD :field DARF MAXIMAL :arg ZEICHEN HABEN",
+  "email": "FELD :field MUSS EINE GÜLTIGE E-MAIL-ADRESSE SEIN",
+  "url": "FELD :field MUSS EINE GÜLTIGE URL SEIN",
+  "uuid": "FELD :field MUSS EINE GÜLTIGE UUID SEIN",
+  "min": "FELD :field MUSS MINDESTENS :arg BETRAGEN",
+  "max": "FELD :field DARF MAXIMAL :arg BETRAGEN",
+  "between": "FELD :field MUSS ZWISCHEN :min UND :max LIEGEN",
+  "oneof": "FELD :field MUSS EINER DIESER WERTE SEIN: :arg",
+  "not_in": "FELD :field DARF KEINER DIESER WERTE SEIN: :arg",
+  "date": "FELD :field MUSS EIN GÜLTIGES DATUM SEIN (JJJJ-MM-TT)",
+  "ip": "FELD :field MUSS EINE GÜLTIGE IP-ADRESSE SEIN",
+  "hexcolor": "FELD :field MUSS EINE GÜLTIGE HEX-FARBE SEIN",
+  "json": "FELD :field MUSS EIN GÜLTIGER JSON-STRING SEIN",
+  "credit_card": "FELD :field MUSS EINE GÜLTIGE KREDITKARTENNUMMER SEIN",
+  "ssn": "FELD :field MUSS EINE GÜLTIGE SOZIALVERSICHERungsNUMMER SEIN"
+}
